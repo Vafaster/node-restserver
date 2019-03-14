@@ -1,7 +1,9 @@
 require('./config/config.js');
+
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
  
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -9,32 +11,21 @@ app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
 app.use(bodyParser.json())
 
-app.get('/usuario', (req, res) => {
-  res.send('get Usuario')
-})
- 
-app.post('/usuario', (req, res) => 
-{
-    let body =  req.body;
-    if(body.nombre === undefined){
-     res.status(400).json({
-         ok:false,
-         msg:"Missing field nombre"
-     })
-    }else
-       res.send({body})
-     
-    
-  })
 
-app.put('/usuario/:id', (req, res) => {
-    let id = req.params.id;
-    res.send(`put Usuario con param id= ${id}`)
-  })
+app.use(require('./routes/users.js'));
 
-app.delete('/usuario', (req, res) => {
-    res.send('delete Usuario')
-  })
+
+  mongoose.connect('mongodb://localhost:27017/cafedb', (err,resp)=>{
+    if(err)
+     throw err;
+    else
+    console.log('Base de Datos ONLINE');
+  });
+
+  
+
+
+
 
 app.listen(process.env.PORT,() => {
     console.log("Escuchando por el puerto : ", process.env.PORT);
